@@ -184,6 +184,27 @@
     return Object.keys(seen).sort().reverse();
   }
 
+  // Walks every transaction oldest first so each row can show the balance it
+  // started from and the balance it left behind. Filters don't affect this -
+  // the running balance is a property of the whole history, not of the view.
+  function runningBalances() {
+    var chronological = state.transactions.slice().sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    });
+
+    var cents = Math.round(state.startingBalance * 100);
+    var byId = {};
+
+    chronological.forEach(function (t) {
+      var before = cents;
+      cents += (t.type === 'credit' ? 1 : -1) * Math.round(t.amount * 100);
+      byId[t.id] = { before: before / 100, after: cents / 100 };
+    });
+
+    return byId;
+  }
+
   function periodLabel() {
     return filters.month === 'all' ? 'All time' : monthLabel(filters.month);
   }
@@ -264,12 +285,13 @@
       return;
     }
 
+    var balances = runningBalances();
     rows.forEach(function (t) {
-      el.txnList.appendChild(transactionRow(t));
+      el.txnList.appendChild(transactionRow(t, balances[t.id]));
     });
   }
 
-  function transactionRow(t) {
+  function transactionRow(t, balance) {
     var li = node('li', 'txn' + (t.id === editingId ? ' editing' : ''));
 
     var main = node('div', 'txn-main');
@@ -281,6 +303,15 @@
     var meta = longDate.format(toDate(t.date));
     if (t.note) meta += ' · ' + t.note;
     main.appendChild(node('p', 'txn-meta', meta));
+
+    if (balance) {
+      var line = node('p', 'txn-balance');
+      line.appendChild(node('span', 'lead', 'Balance'));
+      line.appendChild(node('span', null, fmt(balance.before)));
+      line.appendChild(node('span', 'arrow', '→'));
+      line.appendChild(node('span', 'after', fmt(balance.after)));
+      main.appendChild(line);
+    }
 
     var amount = node(
       'span',

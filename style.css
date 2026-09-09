@@ -405,6 +405,29 @@ input::placeholder { color: var(--text-faint); }
   overflow-wrap: anywhere;
 }
 
+.txn-balance {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.txn-balance .lead {
+  font-size: 11px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.txn-balance .arrow { font-size: 11px; }
+
+.txn-balance .after {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
 .txn-amount {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
@@ -604,10 +627,18 @@ input::placeholder { color: var(--text-faint); }
 
   .filters { gap: 10px; }
 
-  .txn { padding: 12px 2px; gap: 12px; align-items: flex-start; }
+  .txn { padding: 12px 2px; gap: 10px; align-items: stretch; }
+  .txn-balance { font-size: 11px; gap: 4px; }
+  .txn-balance .lead { font-size: 10px; }
 
-  /* Amount lines up with the category, buttons tuck in underneath it. */
-  .txn-side { flex-direction: column; align-items: flex-end; gap: 2px; }
+  /* Amount lines up with the category, buttons sit at the foot of the row. */
+  .txn-side {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+    align-self: stretch;
+    gap: 6px;
+  }
   .txn-actions { margin-right: -8px; }
   .icon-btn { padding: 5px 8px; }
 

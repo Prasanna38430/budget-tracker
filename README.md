@@ -10,6 +10,8 @@ A single-page budget tracker that keeps everything in your browser's localStorag
 - Set a starting balance and change it whenever you like
 - Log expenses and credits with a category, date and optional note
 - Running balance, plus money in/out for whichever month you're looking at
+- Every row shows the balance before and after that transaction, so you can read
+  the history like a bank statement
 - Filter by month and category
 - Eight categories to start with, add your own as you go
 - Export everything to CSV and import it back (handy for backups or moving browsers)
@@ -20,6 +22,10 @@ List, Add, Spending, Data — off a bar at the bottom of the screen, so the
 transactions are the first thing you see instead of the third. Tapping Edit on
 a row takes you to the Add tab with that row loaded, and saving drops you back
 on the list.
+
+The before/after balance is worked out across your whole history in date order, so
+filtering the list down to one month or one category doesn't restart it - a row shows
+the same pair however you're looking at it.
 
 Amounts are formatted in euro. Data lives in one localStorage key, `budget-tracker.v1`,
 so clearing site data for the page wipes it — export a CSV first if you care about it.
