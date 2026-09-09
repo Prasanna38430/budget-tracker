@@ -15,6 +15,12 @@ A single-page budget tracker that keeps everything in your browser's localStorag
 - Export everything to CSV and import it back (handy for backups or moving browsers)
 - Spending-by-category bars for the selected month
 
+On a phone (under 720px) it stops being a dashboard and becomes four tabs —
+List, Add, Spending, Data — off a bar at the bottom of the screen, so the
+transactions are the first thing you see instead of the third. Tapping Edit on
+a row takes you to the Add tab with that row loaded, and saving drops you back
+on the list.
+
 Amounts are formatted in euro. Data lives in one localStorage key, `budget-tracker.v1`,
 so clearing site data for the page wipes it — export a CSV first if you care about it.
 

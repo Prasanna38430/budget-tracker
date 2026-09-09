@@ -305,9 +305,13 @@
     actions.appendChild(edit);
     actions.appendChild(del);
 
+    // Amount and buttons sit side by side on a wide screen and stack on a phone.
+    var side = node('div', 'txn-side');
+    side.appendChild(amount);
+    side.appendChild(actions);
+
     li.appendChild(main);
-    li.appendChild(amount);
-    li.appendChild(actions);
+    li.appendChild(side);
     return li;
   }
 
@@ -461,6 +465,7 @@
     save();
     resetForm();
     render();
+    goToView('list');
   }
 
   function resetForm() {
@@ -499,7 +504,7 @@
     clearError();
 
     renderList();
-    el.txnForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (!goToView('add')) el.txnForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     el.amount.focus();
   }
 
@@ -545,6 +550,26 @@
     save();
     closeStartingEdit();
     render();
+  }
+
+  // ----- phone views ---------------------------------------------------
+
+  // Below this width the four panels become tabs instead of one long scroll.
+  var phone = window.matchMedia('(max-width: 720px)');
+
+  function setView(view) {
+    document.body.dataset.view = view;
+    [].forEach.call(el.tabbar.querySelectorAll('.tab'), function (button) {
+      button.setAttribute('aria-current', button.dataset.view === view ? 'true' : 'false');
+    });
+  }
+
+  // Only worth switching tabs when there are tabs to switch.
+  function goToView(view) {
+    if (!phone.matches) return false;
+    setView(view);
+    window.scrollTo(0, 0);
+    return true;
   }
 
   // ----- CSV -----------------------------------------------------------
@@ -743,7 +768,7 @@
       'typeExpense', 'typeCredit',
       'monthFilter', 'categoryFilter', 'txnList', 'listCount',
       'breakdown', 'breakdownPeriod',
-      'exportBtn', 'importBtn', 'importInput', 'importStatus'
+      'exportBtn', 'importBtn', 'importInput', 'importStatus', 'tabbar'
     ].forEach(function (id) { el[id] = document.getElementById(id); });
 
     el.balanceNote = document.querySelector('.cards .card:first-child .card-note');
@@ -751,7 +776,10 @@
 
   function bindEvents() {
     el.txnForm.addEventListener('submit', handleSubmit);
-    el.cancelEditBtn.addEventListener('click', resetForm);
+    el.cancelEditBtn.addEventListener('click', function () {
+      resetForm();
+      goToView('list');
+    });
 
     el.category.addEventListener('change', function () {
       var adding = el.category.value === NEW_CATEGORY;
@@ -781,6 +809,11 @@
     el.editStartBtn.addEventListener('click', openStartingEdit);
     el.cancelStartBtn.addEventListener('click', closeStartingEdit);
     el.startingForm.addEventListener('submit', saveStartingBalance);
+
+    el.tabbar.addEventListener('click', function (e) {
+      var tab = e.target.closest('.tab');
+      if (tab) setView(tab.dataset.view);
+    });
 
     el.exportBtn.addEventListener('click', exportCsv);
     el.importBtn.addEventListener('click', function () { el.importInput.click(); });

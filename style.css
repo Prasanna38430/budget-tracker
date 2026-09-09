@@ -414,7 +414,14 @@ input::placeholder { color: var(--text-faint); }
 .txn-amount.pos { color: var(--pos); }
 .txn-amount.neg { color: var(--neg); }
 
-.txn-actions { display: flex; gap: 2px; flex: none; }
+.txn-side {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: none;
+}
+
+.txn-actions { display: flex; gap: 2px; }
 
 .icon-btn {
   padding: 5px 9px;
@@ -498,6 +505,40 @@ input::placeholder { color: var(--text-faint); }
 
 .foot p { margin: 0; }
 
+/* ---------- bottom tab bar (phones only) ---------- */
+
+.tabbar {
+  display: none;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 10;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 9px 4px 10px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab svg { width: 21px; height: 21px; }
+
+.tab[aria-current="true"] { color: var(--accent); }
+
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+
 /* ---------- responsive ---------- */
 
 @media (max-width: 900px) {
@@ -507,15 +548,77 @@ input::placeholder { color: var(--text-faint); }
   .card-value { font-size: 22px; margin-top: 4px; }
 }
 
-@media (max-width: 560px) {
-  .wrap { padding: 0 14px; }
-  .topbar-inner { align-items: flex-start; }
-  .cards { margin: 18px 0; }
-  .panel { padding: 16px; }
-  .filters { flex-direction: column; gap: 10px; }
+/* Phones get one section at a time, picked from the bar at the bottom. */
+@media (max-width: 720px) {
+  body { padding-bottom: 76px; }
 
-  .txn { flex-wrap: wrap; gap: 8px 12px; }
-  .txn-main { flex: 1 1 60%; }
-  .txn-amount { margin-left: auto; }
-  .txn-actions { flex-basis: 100%; justify-content: flex-start; margin-left: -9px; }
+  .wrap { padding: 0 14px; }
+
+  .layout, .col-side, .col-main { display: block; }
+
+  [data-view-panel] { display: none; }
+  body[data-view="list"] [data-view-panel="list"],
+  body[data-view="add"] [data-view-panel="add"],
+  body[data-view="spending"] [data-view-panel="spending"],
+  body[data-view="data"] [data-view-panel="data"] { display: block; }
+
+  .tabbar { display: grid; }
+
+  /* Entering a transaction is a focused job - drop the monthly totals so the
+     whole form fits on screen without scrolling. */
+  body[data-view="add"] .cards .card + .card { display: none; }
+
+  .topbar-inner { padding-top: 12px; padding-bottom: 12px; gap: 6px 16px; }
+  .brand h1 { font-size: 16px; }
+  .starting-label { font-size: 12px; }
+  .starting-edit input { width: 108px; }
+
+  /* Balance leads, the two monthly totals share the row underneath. */
+  .cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .cards .card:first-child { grid-column: 1 / -1; }
+  .cards .card:first-child .card-value { font-size: 30px; }
+  .card { padding: 13px 15px; }
+  .card-label { font-size: 11px; }
+  .card-value { font-size: 19px; margin: 6px 0 3px; }
+
+  .panel { padding: 16px; }
+  .panel-head { margin-bottom: 14px; }
+  .field { margin-bottom: 12px; }
+
+  /* 16px keeps iOS Safari from zooming in when a field takes focus. */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  .input-money input { padding-left: 26px; }
+  .segmented label { padding: 11px 0; font-size: 15px; }
+
+  .form-actions .btn { flex: 1; padding: 11px 14px; }
+
+  .filters { gap: 10px; }
+
+  .txn { padding: 12px 2px; gap: 12px; align-items: flex-start; }
+
+  /* Amount lines up with the category, buttons tuck in underneath it. */
+  .txn-side { flex-direction: column; align-items: flex-end; gap: 2px; }
+  .txn-actions { margin-right: -8px; }
+  .icon-btn { padding: 5px 8px; }
+
+  .empty { padding: 22px 8px; }
+
+  .foot { margin: 24px 0 8px; }
+}
+
+@media (max-width: 380px) {
+  .tab span { font-size: 10px; }
+  .brand h1 { font-size: 15px; }
+  .starting-label { font-size: 11px; }
+  .starting-value { font-size: 14px; }
 }
